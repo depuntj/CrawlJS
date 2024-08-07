@@ -14,8 +14,8 @@ This project is a simple web crawler built using Node.js. The crawler visits a g
 1. Clone the repository:
 
    ```
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/depuntj/CrawlJS.git
+   cd CrawlJS
    ```
 
 2. Install the dependencies:
