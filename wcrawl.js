@@ -1,13 +1,36 @@
 const { JSDOM } = require("jsdom");
 
-async function WebCrawler(UrlNow) {
+async function WebCrawler(UrlNow, BaseUrl, Pagesvisited) {
+  const BaseUrlObject = new URL(BaseUrl);
+  const UrlNowObject = new URL(UrlNow);
+  if (BaseUrlObject.hostname !== UrlNowObject.hostname) {
+    console.error("URL provided is not from the same domain");
+    return Pagesvisited;
+  }
+  const normalizeURLNow = normalizeURL(UrlNow);
+  if (Pagesvisited[normalizeURLNow] > 0) {
+    console.log(`URL already visited: ${UrlNow}`);
+    Pagesvisited[normalizeURLNow]++;
+    return Pagesvisited;
+  }
+  Pagesvisited[normalizeURLNow] = 1;
   console.log("Webpage URL provided, starting web crawling for: " + UrlNow);
   const response = await fetch(UrlNow);
   console.log("Response status: " + response.status);
   if (!response.ok) {
     console.error(`Failed to fetch page: ${response.statusText}`);
-    process.exit(1);
+    return Pagesvisited;
   }
+  if (!response.headers.get("content-type").includes("text/html")) {
+    console.error("Provided URL is not a webpage");
+    return Pagesvisited;
+  }
+  const htmlBody = await response.text();
+  const NewURLs = getURLsFromHTML(htmlBody, BaseUrl);
+  for (const NewURL of NewURLs) {
+    Pagesvisited = await WebCrawler(NewURL, BaseUrl, Pagesvisited);
+  }
+  return Pagesvisited;
 }
 
 function getURLsFromHTML(htmlBody, baseURL) {
@@ -41,4 +64,5 @@ function normalizeURL(urlString) {
 module.exports = {
   normalizeURL,
   getURLsFromHTML,
+  WebCrawler,
 };

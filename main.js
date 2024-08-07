@@ -1,16 +1,22 @@
-const WebCrawler = require("./wcrawl");
+const { WebCrawler } = require("./wcrawl");
+const { PrintCrawl } = require("./ExportCrawl");
 
-function main() {
+async function main() {
   if (process.argv.length < 3) {
     console.log("No Webpage URL provided");
     process.exit(1);
   }
+  // just for checking
+  // for (const arg of process.argv){
+  //   console.log(arg)
+  // }
   if (process.argv.length > 3) {
-    console.log("Too many arguments provided");
+    console.log("Too many arguments/Webpage URL provided");
     process.exit(1);
   }
-  console.log(`Webpage URL provided, starting web crawling for ${BaseUrl}`);
-  WebCrawler(BaseUrl);
+  const BaseUrl = process.argv[2];
+  const Pagesvisit = await WebCrawler(BaseUrl, BaseUrl, {});
+  PrintCrawl(Pagesvisit);
 }
 
 main();
